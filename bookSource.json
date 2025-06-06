@@ -1,0 +1,49 @@
+[
+  {
+    "bookSourceComment": "作者🍟\n可以通过修改源url切换里站表站\n\n使用了EhTagTranslation的翻译数据\nhttps://github.com/EhTagTranslation/Database",
+    "bookSourceGroup": "cos图,漫画",
+    "bookSourceName": "E绅士",
+    "bookSourceType": 2,
+    "bookSourceUrl": "https://exhentai.org",
+    "bookUrlPattern": "https://e.hentai.org/g/.+",
+    "customOrder": 5,
+    "enabled": true,
+    "enabledCookieJar": true,
+    "enabledExplore": false,
+    "exploreUrl": "[{\"title\": \"最近更新\",\"url\":\"{{page ==1?'/':cache.getFromMemory('purl')}}\",\"style\": {\"layout_flexBasisPercent\": 1,\"layout_flexGrow\": 1}},{\"title\": \"流行\",\"url\":\"{{page ==1?'/popular':cache.getFromMemory('purl')}}\",\"style\": {\"layout_flexBasisPercent\": 1,\"layout_flexGrow\": 1}},{\"title\": \"收藏标签\",\"url\":\"{{page ==1?'/watched':cache.getFromMemory('purl')}}\",\"style\": {\"layout_flexBasisPercent\": 1,\"layout_flexGrow\": 1}}]",
+    "jsLib": "function parseKind(txt) {\nconst kindClass = {\"Doujinshi\":\"同人志\",\"Manga\":\"漫画\", \"Artist CG\":\"画师CG\",\"Game CG\":\"游戏CG\",\"Non-H\":\"无H\",\"Image Set\":\"图集\",\"Western\":\"西方\",\"Cosplay\":\"Cosplay\", \"Misc\":\"杂项\",\"Asian Porn\":\"亚洲色情\",\"Private\":\"私有\"};\ntxt[2] = txt[2].replace('pages','页');\ntxt[0] = kindClass[txt[0]];\nreturn txt}\n\nfunction parseTag(txt) {\nconst { java, source, cache } = this;\nlet kk = cache.getFromMemory('tagMap');\nif(kk==null){\n\tkk = java.cacheFile(\"https://ehtag.yibaoshutiao.workers.dev\")\n  cache.putMemory('tagMap',kk)}\n  \nlet rows = {\"female\":\"女性\",\"male\":\"男性\",\"mixed\":\"混合\",\"language\":\"语言\",\"other\":\"其他\",\"group\":\"团队\",\"artist\":\"艺术家\",\"cosplayer\":\"Coser\",\"parody\":\"原作\",\"character\":\"角色\",\"reclass\":\"重新分类\",\"temp\":\"临时\"};\n\nlet language = \"\\nchinese│汉语\\nenglish│英语\\njapanese│日语\\nkorean│韩语\\nspeechless│无言\\ntext cleaned│文字清除\\ntranslated│翻译\\nrewrite│改写\"\nlet reclass\nlet mixed = \"\\nkodomo doushi│两小无猜\\nanimal on animal│兽兽\\nbody swap│换身\\nmultimouth blowjob│多口口交\\nmultiple handjob│多重打手枪\\nfrottage│阴茎摩擦🤺\\nmultiple assjob│多重尻交\\nmultiple footjob│多重足交\\nnudism│裸体主义\\nffm threesome│女男女3P\\ngang rape│轮奸\\ngroup│乱交\\nmmf threesome│男女男3P\\nmmt threesome│男扶男3P\\nmtf threesome│男扶女3P\\noyakodon│亲子丼\\nshimaidon│手足丼\\nttm threesome│扶扶男3P\\ntwins│双胞胎\\nincest│乱伦\\ninseki│姻亲\\nlow incest│低存在乱伦\"\nlet other = \"\\nyukkuri│油库里\\ndakimakura│抱枕\\ntime stop│时间停止⏱️\\n3d│3D\\n3d imageset│3D图片集\\nai generated│AI生成\\nanaglyph│红蓝3D\\nanimated│动图\\ncomic│西方漫画\\nextraneous ads│外部广告\\nfigure│手办\\nfull color│全彩\\ngame sprite│像素画\\nhow to│教程\\nmultipanel sequence│多格序列\\nmulti-work series│系列作品\\nnon-h game manual│无H游戏手册\\nnon-h imageset│无H图片集\\npaperchild│纸片人\\nredraw│重绘\\nscreenshots│截图\\nsketch lines│线稿\\nstereoscopic│立体图\\nstory arc│故事线\\nthemeless│无主题\\nwestern cg│西方CG\\nwestern non-h│西方无H\\nwestern imageset│西方图集\\nuncensored│无修正\\nmosaic censorship│马赛克修正\\nfull censorship│完全修正\\nhardcore│硬核\\nnon-nude│无露点\\nalready uploaded│已上传\\ndefaced│污损\\nforbidden content│禁止内容\\nrealporn│真人色情\\nreplaced│已替换\\ncompilation│汇编\\nincomplete│缺页\\nmissing cover│缺封面\\nout of order│顺序错乱\\nsample│样本\\nscanmark│扫描水印\\nwatermarked│水印\\nanthology│选集\\nartbook│画集\\ngoudoushi│合作本\\nnovel│小说\\nsoushuuhen│总集篇\\ntankoubon│单行本\\nvariant set│变体集\\nwebtoon│条漫\\ncaption│说明文字\\nrough grammar│语法差\\nrough translation│渣翻\\nkodomo only│仅儿童\\nno penetration│无插入\\nnudity only│仅裸体\\nobject insertion only│仅物体插入\\nonsen│温泉\"\n  function e2s(category,tag){\n  \tlet uu,oo,ss\n  switch (category) {\n    case \"language\":ss=language;break;\n    case \"mixed\":ss=mixed;break;\n    case \"other\":ss=other;break;\n    default:ss=kk;}\n  uu = \tss.indexOf('\\n'+tag+'│');\n  if(uu!=-1){\n  uu=\tuu+tag.length+2\n  oo = ss.slice(uu,ss.indexOf('\\n',uu))+'('+tag+')'\n  \t}else oo = tag\n  return oo\n  \t}\n\n  const lines = txt.split('\\n');\n  const obj = {};\n\n  lines.forEach(line => {\n    let [category, tag] = line.split(':');\n    if (!obj[category])obj[category] = []\n    obj[category].push(e2s(category,tag));\n  });\n\n  return Object.entries(obj)\n    .map(([category, tags]) => \n    `${rows[category]}: ${tags.join(', ')}`)\n    .join('\\n');\n}",
+    "lastUpdateTime": 1749195282855,
+    "loginUi": "[{name: \"　 　[账号登录]　　 \",\n\ttype: \"button\",\n\taction: \"login(false)\"},\n{name: \"　 　[退出登录]       \",\n\ttype: \"button\",\n\taction: \"login(true)\"},\n\t{name: \"  　  [调整设置]        \",\n\ttype: \"button\",\n\taction: \"set()\"},\n\t{name: \"  　  [  书架  ]        \",\n\ttype: \"button\",\n\taction: \"bs()\"}]",
+    "loginUrl": "function login(is_login) {\n\t  if(is_login){\n\t  cookie.removeCookie(\"exhentai.org\");\n\t  cookie.removeCookie(\"e-hentai.org\");\ncookie.removeCookie(\"forums.e-hentai.org\");\n   java.toast(\"退出登录成功\")}\n   else {\n      var cookies = java.getCookie(source.getKey());\n      if ( cookies && cookies != \"\") {\n         java.toast(\"已登录！\");\n         return false\n    } java.startBrowser(\"https://e-hentai.org/bounce_login.php\",\"登录\")\n}}\n\nfunction set(){\njava.startBrowser(source.getKey()+'/uconfig.php','设置')}\n\nfunction bs(){\n\njava.startBrowser(source.getKey()+'/favorites.php','收藏')}\n",
+    "respondTime": 180000,
+    "ruleBookInfo": {
+      "canReName": "true",
+      "coverUrl": "id.gd1@html\n@js:result.slice(82,-30)",
+      "init": "class.gm.0",
+      "intro": "id.taglist@a@href\n@js:result = result.replaceAll(/https.{20}/g, \"\").replaceAll(\"+\", \" \");\n\" \"+parseTag(result)",
+      "kind": "id.gmid@id.gdc@text&&class.gdt2.[0,5,4]@text\n@js:parseKind(result)",
+      "name": "id.gj@text||id.gn@text"
+    },
+    "ruleContent": {
+      "content": "@js:if(baseUrl.slice(0,4)==\"http\"){\n\tlet content = java.getStringList('id.gdt@a@href')\n\tlet yy = \"\"\nfor(i of content)yy+= '<img src=\"'+i+'\">'\nyy\n\t}else{\n\tcontent = java.hexDecodeToString(result)\n\tcontent = '<img src=\"https://exhentai.org/s'+content.replaceAll(\"\\n\",'\"><img src=\"https://exhentai.org/s')+'\">'}",
+      "imageDecode": "let kk = java.bytesToStr(result)\nlet uu = kk.indexOf('\"img\"')+11\nkk=kk.slice(uu,kk.indexOf('\"',uu))\njava.get(kk,{}).bodyAsBytes()",
+      "imageStyle": "single"
+    },
+    "ruleExplore": {},
+    "ruleSearch": {
+      "bookList": ".itg > tbody > tr\n@js:cache.putMemory('purl',java.getString('id.unext@href')||'http://');\nresult",
+      "bookUrl": "a@href",
+      "coverUrl": "img.0@data-src||img.0@src",
+      "intro": "img.0@title",
+      "kind": "class.gl3e@div[!0,4]@text||class.gl2m@div[5:7]@text||class.gl2c@div[5:7]@text\n@js:parseKind(result)",
+      "name": "img.0@title"
+    },
+    "ruleToc": {
+      "chapterList": "@js:\nbook.canUpdate=false\nlet content = java.getString('id.gdt@a@href').replaceAll(\"https://exhentai.org/s\",\"\")\nlet matches = java.getString('class.gtb.0@tag.p.0@text').replace(\",\",\"\").match(/\\d+/g);\n  let num2 = parseInt(matches[1]);\n  let num3 = parseInt(matches[2]);\n  let urls = [{title:`第1页`,link:'data:;base64,'+java.base64Encode(content)+',{\"type\":\"\"}'}];\nif (num2!=num3){\n  let p = Math.ceil(num3 / num2);\n  for (let i = 1; i < p; i++)\n  {urls.push({title:`第${i+1}页`,link:`${baseUrl}?p=${i}`})}\n}\nurls",
+      "chapterName": "title",
+      "chapterUrl": "link"
+    },
+    "searchUrl": "@js:page == 1 ?'/?f_search='+key:cache.getFromMemory('purl')",
+    "weight": 0
+  }
+]
